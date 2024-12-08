@@ -8,7 +8,7 @@ export interface SourceSectionProps {
   selectedLanguage?: string;
   defaultLanguages: Language[];
   text?: string;
-  onTextChange: () => void;
+  onTextChange: (event: any) => void;
   onLanguageSelect: (lang:string | Language) => void;
 }
 
