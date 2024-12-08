@@ -1,10 +1,10 @@
 <template>
   <div class="flex items-center justify-center gap-2.5 py-10 default-container relative">
     <SourceSection :defaultLanguages="defaultSourceLangs" :selectedLanguage="sourceLanguage"
-      :onLanguageSelect="onSourceChange" :text="text" :onTextChange="() => onTextChange" />
+      :onLanguageSelect="onSourceChange" :text="text" :onTextChange="onTextChange" />
 
     <TargetSection :defaultLanguages="defaultTargetLangs" :selectedLanguage="targetLanguage"
-      :onLanguageSelect="onTargetChange" :text="translatedText" :onTextChange="() => onTextChange" />
+      :onLanguageSelect="onTargetChange" :text="translatedText" />
   </div>
 </template>
 
@@ -13,6 +13,7 @@ import SourceSection from '@/components/SourceSection.vue';
 import TargetSection from '@/components/TargetSection.vue';
 import { defaultLanguages } from '@/data';
 import type { Language } from '@/types';
+import { useDebounceFn } from '@vueuse/core';
 import { ref } from 'vue';
 
 const text = ref('');
@@ -46,8 +47,9 @@ const onTargetChange = (lang: Language) => {
   }
 };
 
-const onTextChange = (event: Event) => {
+const onTextChange = useDebounceFn((event: Event) => {
   const target = event.target as HTMLTextAreaElement;
   text.value = target.value;
-};
+  console.log('Text:', text.value);
+}, 500);
 </script>
