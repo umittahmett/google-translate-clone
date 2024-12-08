@@ -20,13 +20,12 @@
 
     <!-- Text Area -->
     <div class="relative">
-      <textarea :value="text" @change="() => onTextChange"
+      <textarea :value="text" @input="onTextChange"
         class="resize-none rounded-lg text-xl outline-none border border-zinc-200 px-4 py-3 shadow-sm w-full"
         name="source-input" id="source-input" cols="30" rows="5" placeholder="Enter text here..." spellcheck="false">
-        {{ text }}
       </textarea>
-
     </div>
+
     <!-- Language Select -->
     <LanguageSelect :close="() => openSelector = false" :open="openSelector" :selectedLanguage="selectedLanguage"
       :onLanguageSelect="onLanguageSelect" :languages="sourceLanguages" />
@@ -40,9 +39,7 @@ import clsx from 'clsx';
 import { ChevronDown } from 'lucide-vue-next';
 import { ref } from 'vue';
 import LanguageSelect from './LanguageSelect.vue';
-
 defineProps<SourceSectionProps>()
 
 const openSelector = ref<boolean>(false);
-
 </script>
