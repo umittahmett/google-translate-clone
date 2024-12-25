@@ -27,6 +27,6 @@
 
 
 <script setup lang="ts">
-import { Grip, MenuIcon, Settings, User, User2, UserCircle2 } from 'lucide-vue-next';
+import { Grip, MenuIcon, Settings, UserCircle2 } from 'lucide-vue-next';
 import GoogleTranslateImage from '@/assets/gtranslate-logo.png';
 </script>

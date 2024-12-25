@@ -4,7 +4,7 @@
       :onLanguageSelect="onSourceChange" :text="text" :onTextChange="onTextChange" />
 
     <TargetSection :defaultLanguages="defaultTargetLangs" :selectedLanguage="targetLanguage"
-      :onLanguageSelect="onTargetChange" :text="translatedText" />
+      :onLanguageSelect="onTargetChange" :translatedText="translatedText" />
   </div>
 </template>
 
@@ -14,12 +14,13 @@ import TargetSection from '@/components/TargetSection.vue';
 import { defaultLanguages } from '@/data';
 import type { Language } from '@/types';
 import { useDebounceFn } from '@vueuse/core';
+import axios from 'axios';
 import { ref } from 'vue';
 
 const text = ref('');
 const sourceLanguage = ref<string>('');
 const targetLanguage = ref<string>('EN');
-const translatedText = ref('');
+const translatedText = ref<string>('');
 
 const defaultSourceLangs = ref([{ code: 'EN', name: 'English' }, { code: 'RU', name: 'Russian' }, { code: 'TR', name: 'Turkish' }]);
 const defaultTargetLangs = ref([{ code: 'EN', name: 'English' }, { code: 'RU', name: 'Russian' }, { code: 'TR', name: 'Turkish' }]);
@@ -50,6 +51,27 @@ const onTargetChange = (lang: Language) => {
 const onTextChange = useDebounceFn((event: Event) => {
   const target = event.target as HTMLTextAreaElement;
   text.value = target.value;
-  console.log('Text:', text.value);
+
+  if (text.value) {
+    axios.post('/api/v2/translate', {
+      text: [text.value],
+      source_lang: sourceLanguage.value || null,
+      target_lang: targetLanguage.value
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `DeepL-Auth-Key ${import.meta.env.VITE_DEEPL_API_KEY}`
+      }
+    })
+      .then((response) => {
+        translatedText.value = response.data.translations[0].text;
+      })
+      .catch((error) => {
+        console.error('Çeviri başarısız oldu:', error);
+        translatedText.value = 'Çeviri yapılamadı.';
+      });
+  } else {
+    translatedText.value = '';
+  }
 }, 500);
 </script>

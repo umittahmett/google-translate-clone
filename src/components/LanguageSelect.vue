@@ -49,7 +49,6 @@ const filteredLanguages = ref<Language[]>(props.languages);
 
 onClickOutside(container, event => {
   props.close()
-
 });
 
 watchEffect(() => {

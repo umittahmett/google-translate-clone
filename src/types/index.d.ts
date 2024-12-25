@@ -12,7 +12,6 @@ export interface SourceSectionProps {
   onLanguageSelect: (lang:string | Language) => void;
 }
 
-
 export interface TargetSectionProps {
   selectedLanguage?: string;
   defaultLanguages: Language[];
