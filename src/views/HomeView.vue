@@ -1,10 +1,10 @@
 <template>
   <div class="flex items-center justify-center gap-2.5 py-10 default-container relative">
     <SourceSection :defaultLanguages="defaultSourceLangs" :selectedLanguage="sourceLanguage"
-      :onLanguageSelect="onSourceChange" :text="text" :onTextChange="onTextChange" />
+      :onLanguageSelect="(lang) => onSourceChange(lang as Language)" :text="text" :onTextChange="onTextChange" />
 
     <TargetSection :defaultLanguages="defaultTargetLangs" :selectedLanguage="targetLanguage"
-      :onLanguageSelect="onTargetChange" :translatedText="translatedText" />
+      :onLanguageSelect="(lang) => onTargetChange(lang as Language)" :translatedText="translatedText" />
   </div>
 </template>
 
@@ -15,13 +15,12 @@ import { defaultLanguages } from '@/data';
 import type { Language } from '@/types';
 import { useDebounceFn } from '@vueuse/core';
 import axios from 'axios';
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 
 const text = ref('');
 const sourceLanguage = ref<string>('');
 const targetLanguage = ref<string>('EN');
 const translatedText = ref<string>('');
-
 const defaultSourceLangs = ref([{ code: 'EN', name: 'English' }, { code: 'RU', name: 'Russian' }, { code: 'TR', name: 'Turkish' }]);
 const defaultTargetLangs = ref([{ code: 'EN', name: 'English' }, { code: 'RU', name: 'Russian' }, { code: 'TR', name: 'Turkish' }]);
 
@@ -48,30 +47,40 @@ const onTargetChange = (lang: Language) => {
   }
 };
 
+const translateText = () => {
+  if (text.value) {
+    if (text.value) {
+      axios.post('/api/v2/translate', {
+        text: [text.value],
+        source_lang: sourceLanguage.value || null,
+        target_lang: targetLanguage.value
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `DeepL-Auth-Key ${import.meta.env.VITE_DEEPL_API_KEY}`
+        }
+      })
+        .then((response) => {
+          translatedText.value = response.data.translations[0].text;
+        })
+        .catch((error) => {
+          console.error('Çeviri başarısız oldu:', error);
+          translatedText.value = 'Çeviri yapılamadı.';
+        });
+    } else {
+      translatedText.value = '';
+    }
+  }
+}
+
 const onTextChange = useDebounceFn((event: Event) => {
   const target = event.target as HTMLTextAreaElement;
   text.value = target.value;
 
-  if (text.value) {
-    axios.post('/api/v2/translate', {
-      text: [text.value],
-      source_lang: sourceLanguage.value || null,
-      target_lang: targetLanguage.value
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `DeepL-Auth-Key ${import.meta.env.VITE_DEEPL_API_KEY}`
-      }
-    })
-      .then((response) => {
-        translatedText.value = response.data.translations[0].text;
-      })
-      .catch((error) => {
-        console.error('Çeviri başarısız oldu:', error);
-        translatedText.value = 'Çeviri yapılamadı.';
-      });
-  } else {
-    translatedText.value = '';
-  }
+  translateText();
 }, 500);
+
+watchEffect(() => {
+  translateText();
+});
 </script>
