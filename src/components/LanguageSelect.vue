@@ -1,6 +1,7 @@
 <template>
   <div ref="container" class="z-50 absolute min-h-44 top-[88px] left-0 default-container" v-if="open">
     <div class="border border-zinc-200 w-full overflow-hidden rounded-lg bg-white">
+      <!-- Search -->
       <div class="relative border-b border-zinc-200">
         <input v-model="keyword" type="text" class="w-full px-4 pl-12 h-12 border-b border-zinc-200 outline-none"
           placeholder="Search languages" />
@@ -11,6 +12,7 @@
         </button>
       </div>
 
+      <!-- Languages -->
       <div class="grid grid-cols-5 p-2.5">
         <button v-if="languages == filteredLanguages" @click="() => {
           onLanguageSelect('')
@@ -47,10 +49,12 @@ const keyword = ref<string>('');
 const container = ref();
 const filteredLanguages = ref<Language[]>(props.languages);
 
+// Close Language Select Dropdown when clicked outside
 onClickOutside(container, event => {
   props.close()
 });
 
+// Filter Languages based on keyword
 watchEffect(() => {
   filteredLanguages.value = props.languages.filter((lang) => lang.name.toLowerCase().includes(keyword.value.toLowerCase()));
 });

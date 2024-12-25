@@ -1,8 +1,10 @@
 <template>
   <div class="flex items-center justify-center gap-2.5 py-10 default-container relative">
+    <!-- Source Text -->
     <SourceSection :defaultLanguages="defaultSourceLangs" :selectedLanguage="sourceLanguage"
       :onLanguageSelect="(lang) => onSourceChange(lang as Language)" :text="text" :onTextChange="onTextChange" />
 
+    <!-- Target Text -->
     <TargetSection :defaultLanguages="defaultTargetLangs" :selectedLanguage="targetLanguage"
       :onLanguageSelect="(lang) => onTargetChange(lang as Language)" :translatedText="translatedText" />
   </div>
@@ -24,6 +26,7 @@ const translatedText = ref<string>('');
 const defaultSourceLangs = ref([{ code: 'EN', name: 'English' }, { code: 'RU', name: 'Russian' }, { code: 'TR', name: 'Turkish' }]);
 const defaultTargetLangs = ref([{ code: 'EN', name: 'English' }, { code: 'RU', name: 'Russian' }, { code: 'TR', name: 'Turkish' }]);
 
+// On Soruce Language Change
 const onSourceChange = (lang: Language) => {
   sourceLanguage.value = lang.code;
   if (targetLanguage.value == sourceLanguage.value) {
@@ -35,6 +38,7 @@ const onSourceChange = (lang: Language) => {
   }
 }
 
+// On Target Language Change
 const onTargetChange = (lang: Language) => {
   targetLanguage.value = lang.code;
   if (targetLanguage.value == sourceLanguage.value) {
@@ -47,6 +51,7 @@ const onTargetChange = (lang: Language) => {
   }
 };
 
+// Translate Text
 const translateText = () => {
   if (text.value) {
     if (text.value) {
@@ -73,6 +78,7 @@ const translateText = () => {
   }
 }
 
+// Debounce Text Change
 const onTextChange = useDebounceFn((event: Event) => {
   const target = event.target as HTMLTextAreaElement;
   text.value = target.value;
@@ -80,6 +86,7 @@ const onTextChange = useDebounceFn((event: Event) => {
   translateText();
 }, 500);
 
+// Watch For Text or Language Change
 watchEffect(() => {
   translateText();
 });
